@@ -4,13 +4,14 @@ import com.sockc.termiuscn.data.TranslateRepo
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.lang.reflect.Method
 
 object ComposeHooks {
     fun install(lpparam: XC_LoadPackage.LoadPackageParam) {
         hookStringResource(lpparam)
         hookAnnotatedString(lpparam)
         hookAnnotatedStringBuilder(lpparam)
-        hookTextKt(lpparam)
+        hookComposeTextLikeMethods(lpparam)
     }
 
     private fun hookStringResource(lpparam: XC_LoadPackage.LoadPackageParam) {
@@ -82,24 +83,78 @@ object ComposeHooks {
         }
     }
 
-    private fun hookTextKt(lpparam: XC_LoadPackage.LoadPackageParam) {
+    private fun hookComposeTextLikeMethods(lpparam: XC_LoadPackage.LoadPackageParam) {
         val candidates = listOf(
             "androidx.compose.material.TextKt",
-            "androidx.compose.material3.TextKt"
+            "androidx.compose.material3.TextKt",
+            "androidx.compose.foundation.text.BasicTextKt",
+            "androidx.compose.foundation.text.BasicText_androidKt"
         )
+
         for (name in candidates) {
             val clazz = runCatching { Class.forName(name, false, lpparam.classLoader) }.getOrNull() ?: continue
-            runCatching {
-                XposedBridge.hookAllMethods(clazz, "Text", object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        if (param.args.isEmpty()) return
-                        val original = (param.args[0] as? CharSequence)?.toString() ?: return
-                        val translated = TranslateRepo.translate(original) ?: return
-                        param.args[0] = translated
-                    }
-                })
-                XposedBridge.log("TermiusCN: Compose Text hooks installed via $name")
+            val methods = clazz.declaredMethods.filter { method ->
+                method.name.startsWith("Text") || method.name.startsWith("BasicText")
             }
+            if (methods.isEmpty()) continue
+
+            methods.forEach { method -> hookMethodIfUseful(method) }
+            XposedBridge.log("TermiusCN: Compose text-like hooks installed via $name (${methods.size} methods)")
+        }
+    }
+
+    private fun hookMethodIfUseful(method: Method) {
+        runCatching {
+            XposedBridge.hookMethod(method, object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    if (param.args.isEmpty()) return
+                    val first = param.args[0] ?: return
+
+                    when (first) {
+                        is String -> {
+                            val translated = TranslateRepo.translate(first) ?: return
+                            param.args[0] = translated
+                        }
+                        is CharSequence -> {
+                            val translated = TranslateRepo.translate(first.toString()) ?: return
+                            param.args[0] = translated
+                        }
+                        else -> {
+                            if (first.javaClass.name == "androidx.compose.ui.text.AnnotatedString") {
+                                val original = first.toString()
+                                val translated = TranslateRepo.translate(original) ?: return
+                                val replaced = buildAnnotatedString(first.javaClass, translated) ?: return
+                                param.args[0] = replaced
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    private fun buildAnnotatedString(clazz: Class<*>, text: String): Any? {
+        return runCatching {
+            clazz.getConstructor(String::class.java).newInstance(text)
+        }.getOrElse {
+            runCatching {
+                clazz.declaredConstructors.firstOrNull { c ->
+                    val p = c.parameterTypes
+                    p.isNotEmpty() && p[0] == String::class.java
+                }?.let { ctor ->
+                    ctor.isAccessible = true
+                    val args = Array(ctor.parameterCount) { index ->
+                        when (val t = ctor.parameterTypes[index]) {
+                            String::class.java -> text
+                            java.util.List::class.java -> emptyList<Any>()
+                            Int::class.javaPrimitiveType, Integer::class.java -> 0
+                            Boolean::class.javaPrimitiveType, java.lang.Boolean::class.java -> false
+                            else -> null
+                        }
+                    }
+                    ctor.newInstance(*args)
+                }
+            }.getOrNull()
         }
     }
 }

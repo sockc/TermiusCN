@@ -16,4 +16,8 @@ public final class XposedBridge {
     public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> clazz, String methodName, XC_MethodHook callback) {
         return Collections.emptySet();
     }
+
+    public static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> clazz, XC_MethodHook callback) {
+        return Collections.emptySet();
+    }
 }

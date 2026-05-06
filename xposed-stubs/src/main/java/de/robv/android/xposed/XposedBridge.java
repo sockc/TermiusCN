@@ -1,5 +1,8 @@
 package de.robv.android.xposed;
 
+import java.util.Collections;
+import java.util.Set;
+
 public final class XposedBridge {
     private XposedBridge() {
     }
@@ -8,5 +11,9 @@ public final class XposedBridge {
     }
 
     public static void log(Throwable throwable) {
+    }
+
+    public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> clazz, String methodName, XC_MethodHook callback) {
+        return Collections.emptySet();
     }
 }

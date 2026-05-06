@@ -5,8 +5,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 object TermiusHooks {
     fun install(lpparam: XC_LoadPackage.LoadPackageParam) {
-        ResourcesHooks.install()
         TextHooks.install()
+        ComposeHooks.install(lpparam)
         ToastHooks.install()
         ToolbarHooks.install(lpparam)
         XposedBridge.log("TermiusCN: hooks installed for ${lpparam.packageName}")

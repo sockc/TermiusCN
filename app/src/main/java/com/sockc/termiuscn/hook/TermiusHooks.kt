@@ -5,6 +5,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 object TermiusHooks {
     fun install(lpparam: XC_LoadPackage.LoadPackageParam) {
+        PreferenceHooks.install(lpparam)
         ResourceHooks.install(lpparam)
         TextHooks.install()
         ComposeHooks.install(lpparam)

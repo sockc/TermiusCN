@@ -20,7 +20,7 @@ object ResourceHooks {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val resId = param.args.getOrNull(0) as? Int ?: return
                     if (!shouldHandle(param.thisObject as? Resources, resId, lpparam.packageName)) return
-                    if (isPreferenceFlow()) return
+                    if (shouldSkipForSettings()) return
                     val original = param.result as? String ?: return
                     val translated = TranslateRepo.translate(original) ?: return
                     param.result = translated
@@ -36,12 +36,15 @@ object ResourceHooks {
         }.getOrDefault(false)
     }
 
-    private fun isPreferenceFlow(): Boolean {
+    private fun shouldSkipForSettings(): Boolean {
+        if (PreferenceState.isActive()) return true
         return Throwable().stackTrace.any { element ->
             val name = element.className
             name.startsWith("androidx.preference.") ||
                 name.contains("PreferenceFragmentCompat") ||
-                name.contains("PreferenceScreen")
+                name.contains("PreferenceScreen") ||
+                name.contains("PreferenceGroup") ||
+                name.contains("PreferenceInflater")
         }
     }
 }

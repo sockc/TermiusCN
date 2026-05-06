@@ -1,3 +1,3 @@
-# TermiusCN v1.1.1
+# TermiusCN v1.1.2
 
-收窄资源级 hook：仅保留 `Resources.getString()`，并在 `androidx.preference` 调用栈中跳过翻译，修复点击设置闪退。
+为设置页新增 androidx.preference 生命周期探测；当 Preference 页面活跃时，自动跳过 Resources.getString 翻译，降低闪退概率。

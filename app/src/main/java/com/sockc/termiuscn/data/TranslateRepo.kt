@@ -4,11 +4,34 @@ object TranslateRepo {
     private val exact = linkedMapOf(
         "Hosts" to "主机",
         "Host" to "主机",
+        "Keychain" to "密钥链",
+        "Forwarding" to "转发",
+        "Snippets" to "代码片段",
+        "Known hosts" to "已知主机",
+        "Logs" to "日志",
+        "Settings" to "设置",
+        "Account" to "账户",
+        "Account settings" to "账户设置",
+        "Security, Cloud, and Subscription" to "安全、云与订阅",
+        "Team" to "团队",
+        "Join our Discord" to "加入我们的 Discord",
+        "Share your feedback on the new Termius Android app and find the latest news in our Discord community." to "在 Discord 社区分享你对新版 Termius Android 应用的反馈，并获取最新消息。",
+        "Terminal" to "终端",
+        "Font & colours" to "字体与颜色",
+        "Terminal type" to "终端类型",
+        "Hotkeys settings" to "快捷键设置",
+        "Customize keyboard" to "自定义键盘",
+        "Terminal back buffer size" to "终端回滚缓冲区大小",
+        "Bell settings" to "提示铃设置",
+        "Enable autocomplete" to "启用自动补全",
+        "Use Ctrl" to "使用 Ctrl",
+        "Monokai/8/Source Code Pro Medium" to "Monokai/8/Source Code Pro Medium",
+        "xterm-256color" to "xterm-256color",
+        "1000 lines" to "1000 行",
+        "Vibration and Sound" to "振动和声音",
         "Groups" to "分组",
         "Group" to "分组",
-        "Snippets" to "代码片段",
         "Snippet" to "代码片段",
-        "Settings" to "设置",
         "Search" to "搜索",
         "Edit" to "编辑",
         "Delete" to "删除",
@@ -36,12 +59,10 @@ object TranslateRepo {
         "Hostname" to "主机名",
         "Port" to "端口",
         "Port Forwarding" to "端口转发",
-        "Forwarding" to "转发",
         "Local" to "本地",
         "Remote" to "远程",
         "Dynamic" to "动态",
         "SFTP" to "文件传输",
-        "Terminal" to "终端",
         "Clipboard" to "剪贴板",
         "Import" to "导入",
         "Export" to "导出",
@@ -64,16 +85,15 @@ object TranslateRepo {
         Regex("^Connected to (.+)$") to { m -> "已连接到 ${m.groupValues[1]}" },
         Regex("^Connecting to (.+)$") to { m -> "正在连接到 ${m.groupValues[1]}" },
         Regex("^Disconnected from (.+)$") to { m -> "已从 ${m.groupValues[1]} 断开" },
-        Regex("^Delete host \"(.+)\"\\?$" ) to { m -> "删除主机“${m.groupValues[1]}”？" },
-        Regex("^Delete group \"(.+)\"\\?$" ) to { m -> "删除分组“${m.groupValues[1]}”？" }
+        Regex("^Delete host \"(.+)\"\\?$") to { m -> "删除主机“${m.groupValues[1]}”？" },
+        Regex("^Delete group \"(.+)\"\\?$") to { m -> "删除分组“${m.groupValues[1]}”？" }
     )
 
     fun translate(raw: String): String? {
         val src = raw.trim()
         if (src.isEmpty()) return null
 
-        // 尽量不要误改终端会话内容或大段输出
-        if (src.length > 80) return null
+        if (src.length > 120) return null
         if ('\n' in src || '\r' in src || '\t' in src) return null
         if (looksLikeCommandOrPath(src)) return null
 
@@ -87,7 +107,7 @@ object TranslateRepo {
 
     private fun looksLikeCommandOrPath(src: String): Boolean {
         if (src.contains("/")) return true
-        if (src.contains("\$ ")) return true
+        if (src.contains("$ ")) return true
         if (src.startsWith("~")) return true
         if (src.contains("@") && src.contains(":")) return true
         return false

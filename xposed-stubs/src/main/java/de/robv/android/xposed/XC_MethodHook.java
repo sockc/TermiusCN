@@ -9,6 +9,15 @@ public abstract class XC_MethodHook {
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
     }
 
+    public class Unhook {
+        public Member getHookedMethod() {
+            return null;
+        }
+
+        public void unhook() {
+        }
+    }
+
     public static class MethodHookParam {
         public Member method;
         public Object thisObject;

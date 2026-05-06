@@ -1,3 +1,3 @@
-# TermiusCN v1.1
+# TermiusCN v1.1.1
 
-新增更窄的 Resources.getString/getText 钩子，只处理 Termius 自身资源，尝试覆盖 Compose 菜单与导航文本。
+收窄资源级 hook：仅保留 `Resources.getString()`，并在 `androidx.preference` 调用栈中跳过翻译，修复点击设置闪退。

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TermiusCN</string>
+    <string name="module_description">为 Termius 7.5.2 提供第一版运行时中文替换</string>
+    <string name="intro_title">TermiusCN</string>
+    <string name="intro_body">这是一个面向 Termius 的最小 LSPosed/Xposed 文本替换模块。\n\n使用方式：\n1. 安装 APK\n2. 在 LSPosed 中启用模块\n3. 作用域只勾选 Termius\n4. 强制停止并重开 Termius\n\n当前版本只做一批常见界面词条替换，故意避免大范围替换终端输出。</string>
+    <string name="target_package">目标包名：com.server.auditor.ssh.client</string>
+    <string name="notes_title">当前说明</string>
+    <string name="notes_body">• 先以精确匹配为主，降低误伤\n• 若某些页面仍有英文，可继续补充词条或定点 Hook\n• 这是一个最小可编译骨架，便于你先上 GitHub 构建 APK</string>
+</resources>

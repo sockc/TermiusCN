@@ -33,5 +33,20 @@ object TextHooks {
                 }
             }
         )
+
+        runCatching {
+            XposedHelpers.findAndHookMethod(
+                TextView::class.java,
+                "setHint",
+                CharSequence::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val original = param.args.getOrNull(0) as? CharSequence ?: return
+                        val translated = TranslateRepo.translate(original.toString()) ?: return
+                        param.args[0] = translated
+                    }
+                }
+            )
+        }
     }
 }

@@ -9,6 +9,7 @@ object TermiusHooks {
         ComposeHooks.install(lpparam)
         ToastHooks.install()
         ToolbarHooks.install(lpparam)
+        MenuHooks.install()
         XposedBridge.log("TermiusCN: hooks installed for ${lpparam.packageName}")
     }
 }

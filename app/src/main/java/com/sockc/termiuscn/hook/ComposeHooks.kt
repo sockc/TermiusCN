@@ -10,6 +10,7 @@ object ComposeHooks {
         hookStringResource(lpparam)
         hookAnnotatedString(lpparam)
         hookAnnotatedStringBuilder(lpparam)
+        hookTextKt(lpparam)
     }
 
     private fun hookStringResource(lpparam: XC_LoadPackage.LoadPackageParam) {
@@ -48,7 +49,7 @@ object ComposeHooks {
             XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     if (param.args.isEmpty()) return
-                    val original = param.args[0] as? String ?: return
+                    val original = (param.args[0] as? CharSequence)?.toString() ?: return
                     val translated = TranslateRepo.translate(original) ?: return
                     param.args[0] = translated
                 }
@@ -69,7 +70,7 @@ object ComposeHooks {
             XposedBridge.hookAllMethods(clazz, "append", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     if (param.args.isEmpty()) return
-                    val original = param.args[0] as? String ?: return
+                    val original = (param.args[0] as? CharSequence)?.toString() ?: return
                     val translated = TranslateRepo.translate(original) ?: return
                     param.args[0] = translated
                 }
@@ -78,6 +79,27 @@ object ComposeHooks {
         }.onFailure {
             XposedBridge.log("TermiusCN: failed to hook AnnotatedString.Builder append")
             XposedBridge.log(it)
+        }
+    }
+
+    private fun hookTextKt(lpparam: XC_LoadPackage.LoadPackageParam) {
+        val candidates = listOf(
+            "androidx.compose.material.TextKt",
+            "androidx.compose.material3.TextKt"
+        )
+        for (name in candidates) {
+            val clazz = runCatching { Class.forName(name, false, lpparam.classLoader) }.getOrNull() ?: continue
+            runCatching {
+                XposedBridge.hookAllMethods(clazz, "Text", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (param.args.isEmpty()) return
+                        val original = (param.args[0] as? CharSequence)?.toString() ?: return
+                        val translated = TranslateRepo.translate(original) ?: return
+                        param.args[0] = translated
+                    }
+                })
+                XposedBridge.log("TermiusCN: Compose Text hooks installed via $name")
+            }
         }
     }
 }

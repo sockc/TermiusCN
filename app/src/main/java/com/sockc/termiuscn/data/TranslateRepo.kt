@@ -18,9 +18,11 @@ object TranslateRepo {
         "Subscription" to "订阅",
         "Team" to "团队",
         "Personal" to "个人",
+        "Vaults" to "保管库",
         "Join our Discord" to "加入我们的 Discord",
         "Share your feedback on the new Termius Android app and find the latest news in our Discord community." to "在 Discord 社区分享你对新版 Termius Android 应用的反馈，并获取最新消息。",
         "Terminal" to "终端",
+        "Serial terminal" to "串口终端",
         "Font & colours" to "字体与颜色",
         "Font & colors" to "字体与颜色",
         "Terminal type" to "终端类型",
@@ -49,6 +51,7 @@ object TranslateRepo {
         "Group" to "分组",
         "Snippet" to "代码片段",
         "Search" to "搜索",
+        "Search hosts and groups" to "搜索主机和分组",
         "Edit" to "编辑",
         "Delete" to "删除",
         "Add" to "添加",
@@ -81,6 +84,7 @@ object TranslateRepo {
         "SFTP" to "文件传输",
         "Clipboard" to "剪贴板",
         "Import" to "导入",
+        "Quick Import" to "快速导入",
         "Export" to "导出",
         "Appearance" to "外观",
         "Notifications" to "通知",
@@ -107,6 +111,8 @@ object TranslateRepo {
         "Required for autocomplete and accessing command history" to "自动补全和访问命令历史记录需要此功能",
         "Home" to "主页",
         "New host" to "新建主机",
+        "New local" to "新建本地连接",
+        "New group" to "新建分组",
         "Alias" to "别名",
         "Hostname or IP Address" to "主机名或 IP 地址",
         "Tags" to "标签",
@@ -118,6 +124,8 @@ object TranslateRepo {
         "Host Chaining" to "主机链",
         "Proxy" to "代理",
         "+ Add Env Variable" to "+ 添加环境变量",
+        "Connect via SFTP" to "通过 SFTP 连接",
+        "Change theme" to "更改主题",
         "Unknown error" to "未知错误",
         "Error" to "错误",
         "Warning" to "警告",
@@ -130,6 +138,8 @@ object TranslateRepo {
         "Required" to "必填",
         "Optional" to "可选"
     )
+
+    private val exactLower = exact.mapKeys { it.key.lowercase() }
 
     private val templates: List<Pair<Regex, (MatchResult) -> String>> = listOf(
         Regex("^Connected to (.+)$") to { m -> "已连接到 ${m.groupValues[1]}" },
@@ -144,7 +154,6 @@ object TranslateRepo {
     fun translate(raw: String): String? {
         val src = raw.trim()
         if (src.isEmpty()) return null
-
         if (src.length > 220) return null
         if ('\n' in src || '\r' in src || '\t' in src) return null
         if (looksLikeCommandOrPath(src)) return null
@@ -154,6 +163,11 @@ object TranslateRepo {
         val normalized = normalize(src)
         if (normalized != src) {
             exact[normalized]?.let { return it }
+        }
+
+        exactLower[src.lowercase()]?.let { return it }
+        if (normalized != src) {
+            exactLower[normalized.lowercase()]?.let { return it }
         }
 
         templates.firstNotNullOfOrNull { (regex, block) ->

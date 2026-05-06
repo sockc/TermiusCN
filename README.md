@@ -1,3 +1,3 @@
-# TermiusCN v1.0
+# TermiusCN v1.0.1
 
-增强 Compose 文本拦截：尝试钩住 Text / BasicText 相关方法，并补充浮动菜单、导航和终端菜单词条。
+修复 GitHub Actions 编译失败：为 xposed-stubs 补充 XposedBridge.hookMethod(...) 声明。

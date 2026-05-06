@@ -105,6 +105,19 @@ object TranslateRepo {
         "Detect OS" to "检测操作系统",
         "Import shell history" to "导入 Shell 历史记录",
         "Required for autocomplete and accessing command history" to "自动补全和访问命令历史记录需要此功能",
+        "Home" to "主页",
+        "New host" to "新建主机",
+        "Alias" to "别名",
+        "Hostname or IP Address" to "主机名或 IP 地址",
+        "Tags" to "标签",
+        "Delete sends Ctrl-H" to "Delete 键发送 Ctrl-H",
+        "Learn more..." to "了解更多…",
+        "Credentials" to "凭据",
+        "SSH ID, Key, Certificate, FIDO2" to "SSH 身份、密钥、证书、FIDO2",
+        "Agent Forwarding" to "代理转发",
+        "Host Chaining" to "主机链",
+        "Proxy" to "代理",
+        "+ Add Env Variable" to "+ 添加环境变量",
         "Unknown error" to "未知错误",
         "Error" to "错误",
         "Warning" to "警告",
@@ -123,7 +136,9 @@ object TranslateRepo {
         Regex("^Connecting to (.+)$") to { m -> "正在连接到 ${m.groupValues[1]}" },
         Regex("^Disconnected from (.+)$") to { m -> "已从 ${m.groupValues[1]} 断开" },
         Regex("^Delete host \"(.+)\"\\?$") to { m -> "删除主机“${m.groupValues[1]}”？" },
-        Regex("^Delete group \"(.+)\"\\?$") to { m -> "删除分组“${m.groupValues[1]}”？" }
+        Regex("^Delete group \"(.+)\"\\?$") to { m -> "删除分组“${m.groupValues[1]}”？" },
+        Regex("^(\\d+) Hosts$") to { m -> "${m.groupValues[1]} 台主机" },
+        Regex("^(\\d+) Host$") to { m -> "${m.groupValues[1]} 台主机" }
     )
 
     fun translate(raw: String): String? {

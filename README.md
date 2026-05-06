@@ -1,3 +1,3 @@
-# TermiusCN v0.5
+# TermiusCN v0.8
 
-LSPosed module for Termius runtime Chinese translation.
+补充 Hosts 页面与 New host 右侧表单常见词条翻译。

@@ -13,11 +13,16 @@ object TranslateRepo {
         "Account" to "账户",
         "Account settings" to "账户设置",
         "Security, Cloud, and Subscription" to "安全、云与订阅",
+        "Security" to "安全",
+        "Cloud" to "云",
+        "Subscription" to "订阅",
         "Team" to "团队",
+        "Personal" to "个人",
         "Join our Discord" to "加入我们的 Discord",
         "Share your feedback on the new Termius Android app and find the latest news in our Discord community." to "在 Discord 社区分享你对新版 Termius Android 应用的反馈，并获取最新消息。",
         "Terminal" to "终端",
         "Font & colours" to "字体与颜色",
+        "Font & colors" to "字体与颜色",
         "Terminal type" to "终端类型",
         "Hotkeys settings" to "快捷键设置",
         "Customize keyboard" to "自定义键盘",
@@ -79,6 +84,27 @@ object TranslateRepo {
         "Export" to "导出",
         "Appearance" to "外观",
         "Notifications" to "通知",
+        "Notification" to "通知",
+        "Enable notifications" to "启用通知",
+        "Customise or disable the displaying of active connections" to "自定义或禁用活动连接通知显示",
+        "Customize or disable the displaying of active connections" to "自定义或禁用活动连接通知显示",
+        "Security & Privacy" to "安全与隐私",
+        "Biometric unlock" to "生物识别解锁",
+        "PIN code and Pattern lock" to "PIN 码和图案锁",
+        "Disabled" to "已禁用",
+        "Logs storage" to "日志存储",
+        "Send diagnostic data" to "发送诊断数据",
+        "Help to make the app better" to "帮助改进此应用",
+        "Screenshots & screen recording" to "截图与录屏",
+        "Blocked. You will not be able to take screenshots of screens that contain sensitive data." to "已阻止。你将无法对包含敏感数据的界面进行截图或录屏。",
+        "Volume keys" to "音量键",
+        "Volume up" to "音量加",
+        "Volume down" to "音量减",
+        "Post-Quantum Key Exchange" to "后量子密钥交换",
+        "Turn off if you're experiencing issues with legacy devices" to "如果旧设备出现兼容性问题，请关闭此选项",
+        "Detect OS" to "检测操作系统",
+        "Import shell history" to "导入 Shell 历史记录",
+        "Required for autocomplete and accessing command history" to "自动补全和访问命令历史记录需要此功能",
         "Unknown error" to "未知错误",
         "Error" to "错误",
         "Warning" to "警告",
@@ -104,16 +130,33 @@ object TranslateRepo {
         val src = raw.trim()
         if (src.isEmpty()) return null
 
-        if (src.length > 120) return null
+        if (src.length > 220) return null
         if ('\n' in src || '\r' in src || '\t' in src) return null
         if (looksLikeCommandOrPath(src)) return null
 
         exact[src]?.let { return it }
+
+        val normalized = normalize(src)
+        if (normalized != src) {
+            exact[normalized]?.let { return it }
+        }
+
         templates.firstNotNullOfOrNull { (regex, block) ->
             regex.matchEntire(src)?.let(block)
+                ?: regex.matchEntire(normalized)?.let(block)
         }?.let { return it }
 
         return null
+    }
+
+    private fun normalize(src: String): String {
+        return src
+            .replace('\u00A0', ' ')
+            .replace('’', '\'')
+            .replace('“', '"')
+            .replace('”', '"')
+            .replace(Regex("\\s+"), " ")
+            .trim()
     }
 
     private fun looksLikeCommandOrPath(src: String): Boolean {

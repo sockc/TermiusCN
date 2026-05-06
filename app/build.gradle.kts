@@ -11,8 +11,8 @@ android {
         applicationId = "com.sockc.termiuscn"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.0.0.1"
+        versionCode = 10
+        versionName = "0.5.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
